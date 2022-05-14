@@ -63,7 +63,7 @@ def digital_assistant(data):
     if listeningB:
         if "hello" in data:
             listening = True
-            respond("Hi, my name is Sam.")
+            respond("Hi, my name is " + aname + ".")
 
         if "how are you" in data:
             listening = True
