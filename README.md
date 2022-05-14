@@ -1,3 +1,3 @@
-# samai
-my siri clone
+# GooGorilla
+my gassistant/siri clone
 
