@@ -16,22 +16,23 @@ with open('config/general.json') as config:
 
 light_names = tdata["light_unfriendly_names"]
 tbaseurl = tdata["protocol://hostname:port"]
+ttoken = tdata["LONG_LIVED_ACCESS_TOKEN"]
 aname = gdata["assistantName"]
 callingCard = "hey " + aname
 
 def turnOffLight(unFriendlyName):
-    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",baseurl).replace("nonfriendly69name420",unFriendlyName)
+    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",tbaseurl).replace("nonfriendly69name420",unFriendlyName)
     h = {
-        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN",
+        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN".replace("LONG_LIVED_ACCESS_TOKEN",ttoken),
         "content-type": "application/json",
     }
     d = json.dumps({state: "off"})
     return requests.post(url, headers = h, data = d);
 
 def turnOnLight(unFriendlyName):
-    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",baseurl).replace("nonfriendly69name420",unFriendlyName)
+    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",tbaseurl).replace("nonfriendly69name420",unFriendlyName)
     h = {
-        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN",
+        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN".replace("LONG_LIVED_ACCESS_TOKEN",ttoken),
         "content-type": "application/json",
     }
     d = json.dumps({state: "on"})
