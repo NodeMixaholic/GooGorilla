@@ -5,27 +5,42 @@ import os
 import sys
 from gtts import gTTS
 import requests, json
-from tuyaha import TuyaApi
 listeningB = True
-tapi = TuyaApi()
 
 
-with open('config/tuya.json') as config:
+with open('config/homeassistant.json') as config:
     tdata = json.load(config)
 
-username,password,country_code,application = tdata['username'],tdata['password'],tdata['country_code'],tdata['application']
-tapi.init(username,password,country_code,application)
-device_ids = tapi.get_all_devices()
-switch = dict(sorted(dict((i.name(),i) for i in device_ids if i.obj_type == 'switch').items()))
-switch['All Switches'] = list(switch.values())
-lights = dict(sorted(dict((i.name(),i) for i in device_ids if i.obj_type == 'light').items()))
-lights['All Lights'] = list(lights.values())
-devices = {**switch,**lights}
+with open('config/general.json') as config:
+    gdata = json.load(config)
+
+light_names = tdata["light_unfriendly_names"]
+tbaseurl = tdata["protocol://hostname:port"]
+aname = gdata["assistantName"]
+callingCard = "hey " + aname
+
+def turnOffLight(unFriendlyName):
+    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",baseurl).replace("nonfriendly69name420",unFriendlyName)
+    h = {
+        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN",
+        "content-type": "application/json",
+    }
+    d = json.dumps({state: "off"})
+    return requests.post(url, headers = h, data = d);
+
+def turnOnLight(unFriendlyName):
+    url = "http://IP_ADDRESS:8123/api/states/binary_sensor.nonfriendly69name420".replace("http://IP_ADDRESS:8123",baseurl).replace("nonfriendly69name420",unFriendlyName)
+    h = {
+        "Authorization": "Bearer LONG_LIVED_ACCESS_TOKEN",
+        "content-type": "application/json",
+    }
+    d = json.dumps({state: "on"})
+    return requests.post(url, headers = h, data = d);
 
 def listen():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("Sam is listening...")
+        print(aname + " is listening...")
         audio = r.listen(source)
     data = ""
     try:
@@ -60,24 +75,24 @@ def digital_assistant(data):
         if "turn off the lights" in data:
             listening = True
             respond("Turning off the lights.")
-            for i in device:
-                i.turn_off()
+            for name in light_names:
+                turnOffLight(name)
             print('Listening stopped')
             return listening
 
         if "good night" in data:
             listening = False
             respond("Turning off the lights.")
-            for i in device:
-                i.turn_off()
+            for name in light_names:
+                turnOffLight(name)
             print('Listening stopped')
             return listening
 
         if "turn on the lights" in data:
             listening = True
             respond("Turning on the lights.")
-            for i in device:
-                i.turn_on()
+            for name in light_names:
+                turnOnLight(name)
             print('Listening stopped')
             return listening
 
@@ -86,8 +101,18 @@ def digital_assistant(data):
             respond("Goodbye.")
             print('Listening stopped')
             return listening
+
+        if "what is" in data:
+            url = "https://api.duckduckgo.com/?q=querytest123&format=json&pretty=1"
+            urlPlus = data.replace(" ", "%20")
+            url = url.replace("querytest123", urlPlus)
+            response = requests.request("GET", url, headers=headers)
+            data = response.json()
+            dataText = '"' + data["Abstract"] + '", from ' + data["AbstractSource"] + ', powered by DuckDuckGo.'
+            respond(dataText)
+
     if not listeningB:
-        if "hey sam" in data:
+        if callingCard in data:
             listening = False
             respond("Hello, how can I help you?")
             print('Listening stopped')
